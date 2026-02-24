@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply border-slate-700;
+}
+
+body {
+  @apply bg-slate-950 text-slate-50;
+}
+
+@layer utilities {
+  .bg-slate-650 {
+    background-color: rgb(51, 65, 85);
+  }
+}

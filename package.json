@@ -1,0 +1,43 @@
+{
+  "name": "d-kanban",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local-first task management and AI agent orchestration platform",
+  "author": "Yashodhan",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,green \"pnpm --filter server dev\" \"pnpm --filter web dev\"",
+    "build": "pnpm --filter server build && pnpm --filter web build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest run",
+    "clean": "pnpm -r clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser": "^8.56.0",
+    "concurrently": "^9.1.0",
+    "eslint": "9.38.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "prettier": "^3.4.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.0.18"
+  },
+  "pnpm": {
+    "overrides": {
+      "hono": ">=4.11.10",
+      "qs": "^6.14.2",
+      "minimatch": ">=10.2.1"
+    }
+  }
+}
