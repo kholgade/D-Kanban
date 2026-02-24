@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import type { Task, TaskPriority } from '@d-kanban/shared';
+import type { Task, TaskPriority, TaskStatus } from '@d-kanban/shared';
 
 interface TaskModalProps {
   task?: Task;
   isNew?: boolean;
+  defaultStatus?: string;
   onClose: () => void;
   onUpdate: (updates: Partial<Task>) => Promise<void> | void;
   onDelete?: () => Promise<void> | void;
@@ -17,7 +18,7 @@ const PRIORITIES: { value: TaskPriority; label: string; color: string }[] = [
   { value: 'low', label: 'Low', color: 'bg-gray-700 text-gray-200' },
 ];
 
-export default function TaskModal({ task, isNew, onClose, onUpdate, onDelete }: TaskModalProps) {
+export default function TaskModal({ task, isNew, defaultStatus, onClose, onUpdate, onDelete }: TaskModalProps) {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
   const [priority, setPriority] = useState<TaskPriority>(task?.priority || 'low');
@@ -27,7 +28,11 @@ export default function TaskModal({ task, isNew, onClose, onUpdate, onDelete }: 
     e.preventDefault();
     setIsLoading(true);
     try {
-      await onUpdate({ title, description, priority });
+      const updates: Partial<Task> = { title, description, priority };
+      if (isNew && defaultStatus) {
+        updates.status = defaultStatus as TaskStatus;
+      }
+      await onUpdate(updates);
       onClose();
     } finally {
       setIsLoading(false);

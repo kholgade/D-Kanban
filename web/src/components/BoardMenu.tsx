@@ -74,7 +74,7 @@ export default function BoardMenu({
     const json = await onExport(boardName);
     const element = document.createElement('a');
     element.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(json)}`);
-    element.setAttribute('download', `${boardName}.json`);
+    element.setAttribute('download', `${boardName}.dboard.json`);
     element.style.display = 'none';
     document.body.appendChild(element);
     element.click();

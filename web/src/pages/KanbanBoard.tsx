@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import type { Task, TaskStatus } from '@d-kanban/shared';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable';
 import TaskColumn from '../components/TaskColumn';
 import TaskModal from '../components/TaskModal';
 import Header from '../components/Header';
 import { ToastContainer, useToast } from '../components/Toast';
 import { useBoards } from '../hooks/useBoards';
 import { useColumns } from '../hooks/useColumns';
-import { Plus } from 'lucide-react';
 
 interface UseTasksReturn {
   tasks: Task[];
@@ -24,13 +26,30 @@ interface KanbanBoardProps {
 
 export default function KanbanBoard({ tasks }: KanbanBoardProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [showNewTaskModal, setShowNewTaskModal] = useState(false);
-  const [showNewColumnInput, setShowNewColumnInput] = useState(false);
-  const [newColumnTitle, setNewColumnTitle] = useState('');
+  const [newTaskContext, setNewTaskContext] = useState<{ isOpen: boolean; columnStatus: string | null }>({ isOpen: false, columnStatus: null });
+  const [showNewColumnDialog, setShowNewColumnDialog] = useState(false);
+  const [newColumnName, setNewColumnName] = useState('');
 
   const boards = useBoards();
-  const { columns, addColumn, removeColumn } = useColumns();
+  const { columns, addColumn, removeColumn, reorderColumns } = useColumns();
   const toast = useToast();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor)
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = columns.findIndex((col) => col.status === active.id);
+      const newIndex = columns.findIndex((col) => col.status === over.id);
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newColumns = arrayMove(columns, oldIndex, newIndex);
+        reorderColumns(newColumns);
+      }
+    }
+  };
 
   useEffect(() => {
     boards.listBoards();
@@ -44,8 +63,20 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
   };
 
   const handleCreateTask = async (title: string, description: string, priority: string = 'low') => {
-    await tasks.createTask(title, description, priority);
-    setShowNewTaskModal(false);
+    const task = await tasks.createTask(title, description, priority);
+    if (newTaskContext.columnStatus && newTaskContext.columnStatus !== 'todo') {
+      await tasks.updateTask(task.id, { status: newTaskContext.columnStatus as TaskStatus });
+    }
+    setNewTaskContext({ isOpen: false, columnStatus: null });
+  };
+
+  const handleAddColumn = async () => {
+    if (newColumnName.trim()) {
+      addColumn(newColumnName.trim());
+      setNewColumnName('');
+      setShowNewColumnDialog(false);
+      toast.success('Column added');
+    }
   };
 
   return (
@@ -70,14 +101,14 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
         onRefreshBoards={boards.listBoards}
       />
 
-      <main className="p-6 max-w-7xl mx-auto">
+      <main className="p-6">
         <div className="mb-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-slate-50">Kanban Board</h1>
           <button
-            onClick={() => setShowNewTaskModal(true)}
+            onClick={() => setShowNewColumnDialog(true)}
             className="px-4 py-2 bg-violet-600 text-white font-medium rounded-lg hover:bg-violet-700 transition-colors"
           >
-            + New Task
+            + New Column
           </button>
         </div>
 
@@ -87,8 +118,14 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {columns.map((col) => {
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={columns.map((c) => c.status)} strategy={horizontalListSortingStrategy}>
+            <div className="flex overflow-x-auto gap-6 pb-4">
+              {columns.map((col) => {
             const columnTasks = tasks.getTasksByStatus(col.status);
             const canDelete = columns.length > 1 && columnTasks.length === 0;
 
@@ -100,6 +137,7 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
                 tasks={columnTasks}
                 onTaskClick={setSelectedTask}
                 onStatusChange={handleTaskStatusChange}
+                onNewTask={() => setNewTaskContext({ isOpen: true, columnStatus: col.status })}
                 canDelete={canDelete}
                 onDelete={() => {
                   const deleted = removeColumn(col.status, columnTasks.length);
@@ -115,56 +153,10 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
                 }}
               />
             );
-          })}
-
-          {/* Add Column Card */}
-          <div className="bg-slate-800 rounded-lg border border-dashed border-slate-600 p-4 min-h-96 flex flex-col items-center justify-center">
-            {showNewColumnInput ? (
-              <div className="w-full space-y-2">
-                <input
-                  type="text"
-                  value={newColumnTitle}
-                  onChange={(e) => setNewColumnTitle(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-700 bg-slate-700 text-slate-50 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
-                  placeholder="Column name"
-                  autoFocus
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      if (newColumnTitle.trim()) {
-                        addColumn(newColumnTitle.trim());
-                        setNewColumnTitle('');
-                        setShowNewColumnInput(false);
-                        toast.success('Column added');
-                      }
-                    }}
-                    className="flex-1 px-3 py-2 bg-violet-600 text-white font-medium rounded-lg hover:bg-violet-700 transition-colors"
-                  >
-                    Add
-                  </button>
-                  <button
-                    onClick={() => {
-                      setNewColumnTitle('');
-                      setShowNewColumnInput(false);
-                    }}
-                    className="flex-1 px-3 py-2 bg-slate-700 text-slate-300 font-medium rounded-lg hover:bg-slate-600 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowNewColumnInput(true)}
-                className="flex items-center gap-2 px-4 py-2 text-violet-400 hover:bg-slate-700 rounded-lg transition-colors"
-              >
-                <Plus size={20} />
-                <span>Add Column</span>
-              </button>
-            )}
-          </div>
-        </div>
+            })}
+            </div>
+          </SortableContext>
+        </DndContext>
       </main>
 
       <ToastContainer toasts={toast.toasts} onClose={toast.removeToast} />
@@ -183,12 +175,54 @@ export default function KanbanBoard({ tasks }: KanbanBoardProps) {
         />
       )}
 
-      {showNewTaskModal && (
+      {newTaskContext.isOpen && (
         <TaskModal
           isNew
-          onClose={() => setShowNewTaskModal(false)}
+          defaultStatus={newTaskContext.columnStatus || undefined}
+          onClose={() => setNewTaskContext({ isOpen: false, columnStatus: null })}
           onUpdate={(updates) => handleCreateTask(updates.title || '', updates.description || '', updates.priority || 'low')}
         />
+      )}
+
+      {showNewColumnDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50" onClick={() => setShowNewColumnDialog(false)}>
+          <div className="bg-slate-900 rounded-lg shadow-2xl max-w-md w-full mx-4 border border-slate-800 p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-xl font-bold text-violet-400 mb-4">Add New Column</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Column Name</label>
+                <input
+                  type="text"
+                  value={newColumnName}
+                  onChange={(e) => setNewColumnName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleAddColumn();
+                    }
+                  }}
+                  autoFocus
+                  className="w-full px-3 py-2 border border-slate-700 bg-slate-800 text-slate-50 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
+                  placeholder="e.g., Review, Testing"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleAddColumn}
+                  disabled={!newColumnName.trim()}
+                  className="flex-1 py-2 px-4 bg-violet-600 text-white font-medium rounded-lg hover:bg-violet-700 disabled:opacity-50 transition-colors"
+                >
+                  Add Column
+                </button>
+                <button
+                  onClick={() => setShowNewColumnDialog(false)}
+                  className="px-4 py-2 bg-slate-700 text-slate-300 font-medium rounded-lg hover:bg-slate-600 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

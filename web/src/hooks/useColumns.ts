@@ -35,11 +35,16 @@ export function useColumns() {
     );
   }, []);
 
+  const reorderColumns = useCallback((newColumns: Column[]) => {
+    setColumns(newColumns);
+  }, []);
+
   return {
     columns,
     setColumns,
     addColumn,
     removeColumn,
     updateColumnTitle,
+    reorderColumns,
   };
 }
