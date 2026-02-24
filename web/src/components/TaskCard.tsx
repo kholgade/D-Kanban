@@ -1,8 +1,9 @@
 import type { Task, TaskPriority } from '@d-kanban/shared';
+import type { DragEvent } from 'react';
 
 interface TaskCardProps {
   task: Task;
-  onDragStart: (e: React.DragEvent) => void;
+  onDragStart: (e: DragEvent) => void;
   onClick: () => void;
 }
 

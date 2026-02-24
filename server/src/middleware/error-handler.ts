@@ -1,4 +1,4 @@
-import type { Express, Request, Response, NextFunction } from 'express';
+import type { Express, Request, Response } from 'express';
 import { createLogger } from '../lib/logger.js';
 
 const log = createLogger('error-handler');
@@ -17,8 +17,7 @@ export class AppError extends Error {
 export function errorHandler(
   err: unknown,
   _req: Request,
-  res: Response,
-  _next: NextFunction
+  res: Response
 ) {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({

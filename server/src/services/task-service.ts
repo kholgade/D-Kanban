@@ -12,6 +12,10 @@ class TaskService {
   private tasks: TaskStore = {};
 
   createTask(title: string, description = '', priority: TaskPriority = 'low'): Task {
+    // Get the max order for tasks in 'todo' status
+    const todoTasks = Object.values(this.tasks).filter((t) => t.status === 'todo');
+    const maxOrder = Math.max(...todoTasks.map((t) => t.order || 0), -1);
+
     const task: Task = {
       id: nanoid(),
       title,
@@ -19,6 +23,7 @@ class TaskService {
       content: '',
       status: 'todo',
       priority,
+      order: maxOrder + 1,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -41,11 +46,38 @@ class TaskService {
 
   updateTask(id: string, updates: Partial<Task>): Task | null {
     const task = this.tasks[id];
-    if (!task) return null;
+
+    // If task doesn't exist, create it with the provided data
+    if (!task) {
+      const newTask: Task = {
+        id,
+        title: (updates.title as string) || 'Untitled',
+        description: (updates.description as string) || '',
+        content: '',
+        status: (updates.status as TaskStatus) || 'todo',
+        priority: (updates.priority as TaskPriority) || 'low',
+        order: updates.order,
+        createdAt: (updates.createdAt as string) || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      this.tasks[id] = newTask;
+      log.info({ taskId: id }, 'Task created via update');
+      return newTask;
+    }
+
+    // If status changed, update order to place it at the end of new status column
+    let newUpdates = updates;
+    if (updates.status && updates.status !== task.status) {
+      const tasksInNewStatus = Object.values(this.tasks).filter(
+        (t) => t.status === updates.status
+      );
+      const maxOrder = Math.max(...tasksInNewStatus.map((t) => t.order || 0), -1);
+      newUpdates = { ...updates, order: maxOrder + 1 };
+    }
 
     const updated: Task = {
       ...task,
-      ...updates,
+      ...newUpdates,
       id: task.id, // Prevent ID change
       createdAt: task.createdAt, // Prevent creation date change
       updatedAt: new Date().toISOString(),

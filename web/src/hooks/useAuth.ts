@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { AuthUser, AuthToken } from '@d-kanban/shared';
+import type { AuthUser } from '@d-kanban/shared';
 import { ApiClient } from '@d-kanban/shared';
 
 const apiClient = new ApiClient('/api/v1');

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import type { Task, TaskPriority } from '@d-kanban/shared';
 
 interface TaskModalProps {
@@ -22,7 +23,7 @@ export default function TaskModal({ task, isNew, onClose, onUpdate, onDelete }: 
   const [priority, setPriority] = useState<TaskPriority>(task?.priority || 'low');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {

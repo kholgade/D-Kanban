@@ -8,6 +8,7 @@ export interface TaskMetadata {
   priority: TaskPriority;
   createdAt: string;
   updatedAt: string;
+  order?: number;
   assignees?: string[];
   tags?: string[];
   dueDate?: string;

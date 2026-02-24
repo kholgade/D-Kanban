@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 
 interface LoginPageProps {
   onLogin: (username: string, password: string) => Promise<void>;
@@ -10,7 +11,7 @@ export default function LoginPage({ onLogin, isLoading, error }: LoginPageProps)
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin123');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     await onLogin(username, password);
   };

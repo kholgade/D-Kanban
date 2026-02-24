@@ -1,0 +1,85 @@
+{
+  "name": "Final Test Board",
+  "description": "Comprehensive feature test",
+  "tasks": [
+    {
+      "id": "pL5CYrKoT6viUddE7RuOO",
+      "title": "Task 1",
+      "description": "",
+      "content": "",
+      "status": "todo",
+      "priority": "low",
+      "order": 0,
+      "createdAt": "2026-02-24T17:42:53.151Z",
+      "updatedAt": "2026-02-24T17:42:53.151Z"
+    },
+    {
+      "id": "NsNLqYvv8fDbb8ZZUp9Tz",
+      "title": "Task 2",
+      "description": "",
+      "content": "",
+      "status": "todo",
+      "priority": "low",
+      "order": 1,
+      "createdAt": "2026-02-24T17:42:56.952Z",
+      "updatedAt": "2026-02-24T17:42:56.952Z"
+    },
+    {
+      "id": "wMvT-Tz6Y6sSsk-P9e2lp",
+      "title": "Task 3",
+      "description": "",
+      "content": "",
+      "status": "todo",
+      "priority": "low",
+      "order": 2,
+      "createdAt": "2026-02-24T17:43:00.843Z",
+      "updatedAt": "2026-02-24T17:43:00.843Z"
+    },
+    {
+      "id": "rfF7nBVyFQpkbONoDCYMM",
+      "title": "Task 4",
+      "description": "",
+      "content": "",
+      "status": "todo",
+      "priority": "urgent",
+      "order": 3,
+      "createdAt": "2026-02-24T17:43:04.718Z",
+      "updatedAt": "2026-02-24T17:43:04.718Z"
+    },
+    {
+      "id": "_B9XXmR2wy1o8wT2uv9hm",
+      "title": "Task 5",
+      "description": "",
+      "content": "",
+      "status": "todo",
+      "priority": "low",
+      "order": 4,
+      "createdAt": "2026-02-24T17:43:08.659Z",
+      "updatedAt": "2026-02-24T17:43:08.659Z"
+    }
+  ],
+  "columns": [
+    {
+      "status": "todo",
+      "title": "To Do",
+      "order": 0
+    },
+    {
+      "status": "in-progress",
+      "title": "Working",
+      "order": 1
+    },
+    {
+      "status": "blocked",
+      "title": "Blocked",
+      "order": 2
+    },
+    {
+      "status": "done",
+      "title": "Done",
+      "order": 3
+    }
+  ],
+  "createdAt": "2026-02-24T17:43:16.355Z",
+  "updatedAt": "2026-02-24T17:43:16.355Z"
+}

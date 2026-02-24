@@ -12,8 +12,8 @@ export class ApiClient {
     this.token = token;
   }
 
-  private getHeaders(): HeadersInit {
-    const headers: HeadersInit = {
+  private getHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
     if (this.token) {

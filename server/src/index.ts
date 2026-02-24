@@ -5,6 +5,7 @@ import compression from 'compression';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
 import tasksRouter from './routes/tasks.js';
+import boardsRouter from './routes/boards.js';
 import { createLogger } from './lib/logger.js';
 import { attachErrorHandler } from './middleware/error-handler.js';
 
@@ -40,6 +41,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/tasks', tasksRouter);
+app.use('/api/v1/boards', boardsRouter);
 
 // Health check
 app.get('/api/v1/health', (_req, res) => {

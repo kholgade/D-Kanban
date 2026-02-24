@@ -12,7 +12,7 @@ interface UseTasksReturn {
   getTasksByStatus: (status: TaskStatus) => Task[];
 }
 
-export function useTasks(token: string | null): UseTasksReturn {
+export function useTasks(): UseTasksReturn {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,7 +92,9 @@ export function useTasks(token: string | null): UseTasksReturn {
 
   const getTasksByStatus = useCallback(
     (status: TaskStatus): Task[] => {
-      return tasks.filter((t) => t.status === status);
+      return tasks
+        .filter((t) => t.status === status)
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
     },
     [tasks]
   );
