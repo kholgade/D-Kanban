@@ -100,4 +100,4 @@ web/            # React frontend
 CLAUDE.md       # Development guidelines
 ```
 
-For detailed architecture and development notes, see `CLAUDE.md`.
+F
