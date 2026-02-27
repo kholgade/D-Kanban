@@ -75,7 +75,7 @@ export function ToastContainer({ toasts, onClose }: ToastContainerProps) {
 export function useToast() {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  const addToast = (type: ToastType, message: string, duration: number = 4000) => {
+  const addToast = (type: ToastType, message: string, duration: number = 3000) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newToast: ToastMessage = { id, type, message, duration };
     setToasts((prev) => [...prev, newToast]);
@@ -89,9 +89,9 @@ export function useToast() {
     toasts,
     addToast,
     removeToast,
-    success: (msg: string, duration?: number) => addToast('success', msg, duration),
-    error: (msg: string, duration?: number) => addToast('error', msg, duration),
-    warning: (msg: string, duration?: number) => addToast('warning', msg, duration),
-    info: (msg: string, duration?: number) => addToast('info', msg, duration),
+    success: (msg: string, duration?: number) => addToast('success', msg, duration ?? 3000),
+    error: (msg: string, duration?: number) => addToast('error', msg, duration ?? 3000),
+    warning: (msg: string, duration?: number) => addToast('warning', msg, duration ?? 3000),
+    info: (msg: string, duration?: number) => addToast('info', msg, duration ?? 3000),
   };
 }

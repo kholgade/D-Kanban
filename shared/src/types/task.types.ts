@@ -12,6 +12,8 @@ export interface TaskMetadata {
   assignees?: string[];
   tags?: string[];
   dueDate?: string;
+  scheduledDate?: string;
+  parentTaskId?: string;
 }
 
 export interface Task extends TaskMetadata {

@@ -5,7 +5,7 @@ import { DEFAULT_COLUMNS } from '@d-kanban/shared';
 export function useColumns() {
   const [columns, setColumns] = useState<Column[]>(DEFAULT_COLUMNS);
 
-  const addColumn = useCallback((title: string) => {
+  const addColumn = useCallback((title: string, color?: string) => {
     setColumns((prev) => {
       const newOrder = Math.max(...prev.map((c) => c.order), -1) + 1;
       const newStatus = `custom-${Date.now()}` as unknown as typeof DEFAULT_COLUMNS[0]['status'];
@@ -13,6 +13,7 @@ export function useColumns() {
         status: newStatus,
         title,
         order: newOrder,
+        color,
       };
       return [...prev, newColumn];
     });

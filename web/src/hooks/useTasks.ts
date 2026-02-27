@@ -5,11 +5,12 @@ interface UseTasksReturn {
   tasks: Task[];
   isLoading: boolean;
   error: string | null;
-  createTask: (title: string, description: string) => Promise<Task>;
+  createTask: (title: string, description: string, priority?: string, parentTaskId?: string) => Promise<Task>;
   updateTask: (id: string, updates: Partial<Task>) => Promise<Task>;
   deleteTask: (id: string) => Promise<void>;
   fetchTasks: () => Promise<void>;
   getTasksByStatus: (status: TaskStatus) => Task[];
+  getSubTasks: (parentId: string) => Task[];
 }
 
 export function useTasks(): UseTasksReturn {
@@ -38,13 +39,13 @@ export function useTasks(): UseTasksReturn {
   }, [fetchTasks]);
 
   const createTask = useCallback(
-    async (title: string, description: string, priority: string = 'low'): Promise<Task> => {
+    async (title: string, description: string, priority: string = 'low', parentTaskId?: string): Promise<Task> => {
       const response = await fetch('/api/v1/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title, description, priority }),
+        body: JSON.stringify({ title, description, priority, parentTaskId }),
       });
       const data = (await response.json()) as { success: boolean; data: Task };
       if (data.success) {
@@ -58,21 +59,38 @@ export function useTasks(): UseTasksReturn {
 
   const updateTask = useCallback(
     async (id: string, updates: Partial<Task>): Promise<Task> => {
-      const response = await fetch(`/api/v1/tasks/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      });
-      const data = (await response.json()) as { success: boolean; data: Task };
-      if (data.success) {
-        setTasks((prev) => prev.map((t) => (t.id === id ? data.data : t)));
-        return data.data;
+      // Store original task for rollback
+      const originalTask = tasks.find((t) => t.id === id);
+
+      // Optimistic update - update state immediately
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, ...updates } : t))
+      );
+
+      try {
+        const response = await fetch(`/api/v1/tasks/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updates),
+        });
+        const data = (await response.json()) as { success: boolean; data: Task };
+        if (data.success) {
+          // Server response might have different values, update with actual response
+          setTasks((prev) => prev.map((t) => (t.id === id ? data.data : t)));
+          return data.data;
+        }
+        throw new Error('Failed to update task');
+      } catch (err) {
+        // Rollback optimistic update on error
+        if (originalTask) {
+          setTasks((prev) => prev.map((t) => (t.id === id ? originalTask : t)));
+        }
+        throw err;
       }
-      throw new Error('Failed to update task');
     },
-    []
+    [tasks]
   );
 
   const deleteTask = useCallback(
@@ -93,7 +111,16 @@ export function useTasks(): UseTasksReturn {
   const getTasksByStatus = useCallback(
     (status: TaskStatus): Task[] => {
       return tasks
-        .filter((t) => t.status === status)
+        .filter((t) => t.status === status && !t.parentTaskId)
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
+    },
+    [tasks]
+  );
+
+  const getSubTasks = useCallback(
+    (parentId: string): Task[] => {
+      return tasks
+        .filter((t) => t.parentTaskId === parentId)
         .sort((a, b) => (a.order || 0) - (b.order || 0));
     },
     [tasks]
@@ -108,5 +135,6 @@ export function useTasks(): UseTasksReturn {
     deleteTask,
     fetchTasks,
     getTasksByStatus,
+    getSubTasks,
   };
 }

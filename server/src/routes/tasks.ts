@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import type { Task } from '@d-kanban/shared';
 import { asyncHandler } from '../middleware/async-handler.js';
 import { AppError } from '../middleware/error-handler.js';
 import { taskService } from '../services/task-service.js';
@@ -10,13 +11,16 @@ const createTaskSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().optional().default(''),
   priority: z.enum(['urgent', 'high', 'important', 'low']).optional().default('low'),
+  parentTaskId: z.string().optional(),
 });
 
 const updateTaskSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   description: z.string().optional(),
-  status: z.enum(['todo', 'in-progress', 'blocked', 'done']).optional(),
+  status: z.string().optional(),
   priority: z.enum(['urgent', 'high', 'important', 'low']).optional(),
+  order: z.number().optional(),
+  parentTaskId: z.string().optional().nullable(),
 });
 
 // GET /tasks - Get all tasks
@@ -45,8 +49,8 @@ router.get(
 router.post(
   '/',
   asyncHandler((req, res) => {
-    const { title, description, priority } = createTaskSchema.parse(req.body);
-    const task = taskService.createTask(title, description, priority);
+    const { title, description, priority, parentTaskId } = createTaskSchema.parse(req.body);
+    const task = taskService.createTask(title, description, priority, parentTaskId);
     res.status(201).json({ success: true, data: task });
   })
 );
@@ -57,7 +61,7 @@ router.put(
   asyncHandler((req, res) => {
     const id = typeof req.params.id === 'string' ? req.params.id : req.params.id[0];
     const updates = updateTaskSchema.parse(req.body);
-    const task = taskService.updateTask(id, updates);
+    const task = taskService.updateTask(id, updates as Partial<Task>);
 
     if (!task) {
       throw new AppError(404, 'Task not found');

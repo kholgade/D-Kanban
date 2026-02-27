@@ -33,10 +33,14 @@ export interface BoardMetadata {
 }
 
 class BoardStorageService {
+  private directoriesEnsured = false;
+
   async ensureDirectories(): Promise<void> {
+    if (this.directoriesEnsured) return;
+
     try {
       await fs.mkdir(BOARDS_DIR, { recursive: true });
-      log.info('Ensured board storage directories exist');
+      this.directoriesEnsured = true;
     } catch (err) {
       log.error({ err }, 'Failed to create directories');
       throw err;

@@ -11,24 +11,32 @@ interface TaskStore {
 class TaskService {
   private tasks: TaskStore = {};
 
-  createTask(title: string, description = '', priority: TaskPriority = 'low'): Task {
-    // Get the max order for tasks in 'todo' status
-    const todoTasks = Object.values(this.tasks).filter((t) => t.status === 'todo');
-    const maxOrder = Math.max(...todoTasks.map((t) => t.order || 0), -1);
+  createTask(title: string, description = '', priority: TaskPriority = 'low', parentTaskId?: string): Task {
+    // Get the max order for tasks in 'todo' status or parent's sub-tasks
+    let tasksForOrder: Task[];
+    if (parentTaskId) {
+      // For sub-tasks, calculate order among parent's sub-tasks
+      tasksForOrder = Object.values(this.tasks).filter((t) => t.parentTaskId === parentTaskId);
+    } else {
+      // For root tasks in 'todo' status
+      tasksForOrder = Object.values(this.tasks).filter((t) => t.status === 'todo' && !t.parentTaskId);
+    }
+    const maxOrder = Math.max(...tasksForOrder.map((t) => t.order || 0), -1);
 
     const task: Task = {
       id: nanoid(),
       title,
       description,
       content: '',
-      status: 'todo',
+      status: parentTaskId ? 'todo' : 'todo',
       priority,
       order: maxOrder + 1,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      parentTaskId,
     };
     this.tasks[task.id] = task;
-    log.info({ taskId: task.id }, 'Task created');
+    log.info({ taskId: task.id, parentTaskId }, 'Task created');
     return task;
   }
 
@@ -42,6 +50,12 @@ class TaskService {
 
   getTasksByStatus(status: TaskStatus): Task[] {
     return Object.values(this.tasks).filter((t) => t.status === status);
+  }
+
+  getSubTasks(parentId: string): Task[] {
+    return Object.values(this.tasks)
+      .filter((t) => t.parentTaskId === parentId)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
   }
 
   updateTask(id: string, updates: Partial<Task>): Task | null {
@@ -90,8 +104,14 @@ class TaskService {
 
   deleteTask(id: string): boolean {
     if (this.tasks[id]) {
+      // Cascade delete sub-tasks
+      const subTasks = this.getSubTasks(id);
+      subTasks.forEach((st) => {
+        delete this.tasks[st.id];
+      });
+
       delete this.tasks[id];
-      log.info({ taskId: id }, 'Task deleted');
+      log.info({ taskId: id, subTaskCount: subTasks.length }, 'Task deleted with sub-tasks');
       return true;
     }
     return false;
@@ -104,6 +124,13 @@ class TaskService {
     if (!orderedIds.every((id) => validIds.has(id))) {
       throw new Error('Invalid task IDs for reordering');
     }
+
+    orderedIds.forEach((id, index) => {
+      const task = this.tasks[id];
+      if (task) {
+        task.order = index;
+      }
+    });
 
     log.info({ status, count: orderedIds.length }, 'Tasks reordered');
   }

@@ -3,15 +3,164 @@
 @tailwind utilities;
 
 * {
-  @apply border-slate-700;
+  @apply border-none;
 }
 
 body {
-  @apply bg-slate-950 text-slate-50;
+  @apply bg-gray-100 text-gray-800;
+}
+
+/* Global styles for inputs and textareas */
+input,
+textarea,
+select {
+  @apply neumorphic-dark !important;
+  @apply text-gray-700 !important;
+  color: #374151 !important;
+}
+
+input::placeholder {
+  color: #9ca3af !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  @apply neumorphic-dark-pressed !important;
+  outline: none !important;
 }
 
 @layer utilities {
   .bg-slate-650 {
     background-color: rgb(51, 65, 85);
+  }
+
+  /* Light Neumorphic style with raised elevation */
+  .neumorphic {
+    border-radius: 11px;
+    background: #e0e0e0;
+    box-shadow: 3px 3px 6px #bdbdbd,
+                -3px -3px 6px #ffffff,
+                inset 1px 1px 2px #ffffff,
+                inset -1px -1px 2px #a8a8a8;
+  }
+
+  .neumorphic-pressed {
+    border-radius: 11px;
+    background: #e0e0e0;
+    box-shadow: inset 3px 3px 6px #bdbdbd,
+                inset -3px -3px 6px #ffffff;
+  }
+
+  .neumorphic:hover {
+    box-shadow: 4px 4px 8px #bdbdbd,
+                -4px -4px 8px #ffffff,
+                inset 1px 1px 2px #ffffff,
+                inset -1px -1px 2px #a8a8a8;
+  }
+
+  /* Light Neumorphic style with raised elevation */
+  .neumorphic-dark {
+    border-radius: 11px;
+    background: #e0e0e0;
+    box-shadow: 3px 3px 6px #bdbdbd,
+                -3px -3px 6px #ffffff,
+                inset 1px 1px 2px #ffffff,
+                inset -1px -1px 2px #a8a8a8;
+  }
+
+  .neumorphic-dark-pressed {
+    border-radius: 11px;
+    background: #e0e0e0;
+    box-shadow: inset 3px 3px 6px #bdbdbd,
+                inset -3px -3px 6px #ffffff;
+  }
+
+  .neumorphic-dark:hover {
+    box-shadow: 4px 4px 8px #bdbdbd,
+                -4px -4px 8px #ffffff,
+                inset 1px 1px 2px #ffffff,
+                inset -1px -1px 2px #a8a8a8;
+  }
+
+  /* Neumorphic button styles */
+  .btn-neumorphic {
+    @apply neumorphic-dark text-gray-700 font-semibold px-4 py-2 transition-all duration-150;
+    border-left: 2px solid #10b981;
+    border-right: 2px solid #10b981;
+  }
+
+  .btn-neumorphic:hover {
+    border-left-color: #34d399;
+    border-right-color: #34d399;
+    box-shadow: 3px 3px 6px #bdbdbd,
+                -3px -3px 6px #ffffff,
+                inset 1px 1px 2px #ffffff,
+                inset -1px -1px 2px #a8a8a8;
+  }
+
+  .btn-neumorphic:active {
+    @apply neumorphic-dark-pressed;
+    border-left-color: #059669;
+    border-right-color: #059669;
+  }
+
+  /* Neumorphic input/textarea styles */
+  .input-neumorphic {
+    @apply neumorphic-dark text-gray-700 px-3 py-2 transition-all duration-150;
+    border-left: 2px solid #8b5cf6;
+    border-right: 2px solid #8b5cf6;
+  }
+
+  .input-neumorphic::placeholder {
+    @apply text-gray-500;
+  }
+
+  .input-neumorphic:focus {
+    @apply neumorphic-dark-pressed outline-none;
+    border-left-color: #a78bfa;
+    border-right-color: #a78bfa;
+  }
+
+  /* Neumorphic select styles */
+  .select-neumorphic {
+    @apply neumorphic-dark text-gray-700 px-3 py-2 cursor-pointer transition-all duration-150;
+    border-left: 2px solid #8b5cf6;
+    border-right: 2px solid #8b5cf6;
+  }
+
+  .select-neumorphic:hover {
+    border-left-color: #a78bfa;
+    border-right-color: #a78bfa;
+    box-shadow: 3px 3px 6px #bdbdbd,
+                -3px -3px 6px #ffffff,
+                inset 1px 1px 2px #ffffff,
+                inset -1px -1px 2px #a8a8a8;
+  }
+
+  .select-neumorphic:focus {
+    @apply neumorphic-dark-pressed outline-none;
+    border-left-color: #a78bfa;
+    border-right-color: #a78bfa;
+  }
+
+  /* Neumorphic modal/card background */
+  .modal-neumorphic {
+    @apply neumorphic-dark;
+  }
+
+  /* Neumorphic section/container */
+  .container-neumorphic {
+    @apply neumorphic-dark;
+  }
+
+  /* Neumorphic badge/tag */
+  .badge-neumorphic {
+    @apply neumorphic-dark text-gray-700 px-3 py-1 text-xs font-medium;
+  }
+
+  /* Neumorphic divider */
+  .divider-neumorphic {
+    @apply border-t border-slate-400/20;
   }
 }

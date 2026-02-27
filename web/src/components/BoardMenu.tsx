@@ -92,21 +92,21 @@ export default function BoardMenu({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-slate-50 font-medium rounded-lg hover:bg-slate-600 transition-colors"
+        className="flex items-center gap-2 px-4 py-2 btn-neumorphic rounded-lg"
       >
         Boards
         <ChevronDown size={18} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-40 min-w-64">
-          <div className="p-3 border-b border-slate-700 space-y-2">
+        <div className="absolute top-full left-0 mt-2 neumorphic-dark border border-gray-400 rounded-lg shadow-lg z-40 min-w-64">
+          <div className="p-3 border-b border-gray-300 space-y-2">
             <button
               onClick={() => {
                 setShowSaveModal(true);
                 setIsOpen(false);
               }}
-              className="w-full text-left px-3 py-2 text-slate-50 hover:bg-slate-700 rounded transition-colors"
+              className="w-full text-left px-3 py-2 text-gray-700 hover:text-gray-800 neumorphic-dark rounded transition-colors"
             >
               💾 Save Board
             </button>
@@ -115,7 +115,7 @@ export default function BoardMenu({
                 setShowImportModal(true);
                 setIsOpen(false);
               }}
-              className="w-full text-left px-3 py-2 text-slate-50 hover:bg-slate-700 rounded transition-colors"
+              className="w-full text-left px-3 py-2 text-gray-700 hover:text-gray-800 neumorphic-dark rounded transition-colors"
             >
               📥 Import Board
             </button>
@@ -124,44 +124,44 @@ export default function BoardMenu({
                 onRefresh();
                 setIsOpen(false);
               }}
-              className="w-full text-left px-3 py-2 text-slate-50 hover:bg-slate-700 rounded transition-colors"
+              className="w-full text-left px-3 py-2 text-gray-700 hover:text-gray-800 neumorphic-dark rounded transition-colors"
             >
               🔄 Refresh
             </button>
           </div>
 
           {isLoading ? (
-            <div className="p-3 text-center text-slate-400">Loading boards...</div>
+            <div className="p-3 text-center text-gray-600">Loading boards...</div>
           ) : boards.length === 0 ? (
-            <div className="p-3 text-center text-slate-400">No saved boards</div>
+            <div className="p-3 text-center text-gray-600">No saved boards</div>
           ) : (
             <div className="max-h-64 overflow-y-auto">
               {boards.map((board) => (
                 <div
                   key={board.name}
-                  className="px-3 py-2 border-b border-slate-700 last:border-b-0 hover:bg-slate-700/50"
+                  className="px-3 py-2 border-b border-gray-300 last:border-b-0 hover:bg-gray-200/30"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-slate-50 font-medium truncate">{board.name}</p>
-                      <p className="text-xs text-slate-400">{board.taskCount} tasks</p>
+                      <p className="text-gray-800 font-medium truncate">{board.name}</p>
+                      <p className="text-xs text-gray-600">{board.taskCount} tasks</p>
                     </div>
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleLoad(board.name)}
-                        className="px-2 py-1 text-xs bg-violet-600 text-white rounded hover:bg-violet-700"
+                        className="px-2 py-1 text-xs btn-neumorphic"
                       >
                         Load
                       </button>
                       <button
                         onClick={() => handleExport(board.name)}
-                        className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+                        className="px-2 py-1 text-xs btn-neumorphic"
                       >
                         Export
                       </button>
                       <button
                         onClick={() => handleDelete(board.name)}
-                        className="px-2 py-1 text-xs bg-red-900 text-red-100 rounded hover:bg-red-800"
+                        className="px-2 py-1 text-xs btn-neumorphic"
                       >
                         Delete
                       </button>
@@ -176,26 +176,26 @@ export default function BoardMenu({
 
       {showSaveModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50" onClick={() => setShowSaveModal(false)}>
-          <div className="bg-slate-900 rounded-lg shadow-2xl max-w-md w-full mx-4 border border-slate-800 p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-xl font-bold text-violet-400 mb-4">Save Board</h2>
+          <div className="neumorphic-dark rounded-lg shadow-2xl max-w-md w-full mx-4 p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Save Board</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Board Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Board Name</label>
                 <input
                   type="text"
                   value={saveName}
                   onChange={(e) => setSaveName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-700 bg-slate-800 text-slate-50 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
+                  className="w-full input-neumorphic rounded-lg"
                   placeholder="My Board"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Description (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
                 <input
                   type="text"
                   value={saveDescription}
                   onChange={(e) => setSaveDescription(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-700 bg-slate-800 text-slate-50 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
+                  className="w-full input-neumorphic rounded-lg"
                   placeholder="Board description"
                 />
               </div>
@@ -203,13 +203,13 @@ export default function BoardMenu({
                 <button
                   onClick={handleSave}
                   disabled={isSaving || !saveName.trim()}
-                  className="flex-1 py-2 px-4 bg-violet-600 text-white font-medium rounded-lg hover:bg-violet-700 disabled:opacity-50 transition-colors"
+                  className="flex-1 py-2 px-4 btn-neumorphic rounded-lg disabled:opacity-50"
                 >
                   {isSaving ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   onClick={() => setShowSaveModal(false)}
-                  className="px-4 py-2 bg-slate-700 text-slate-300 font-medium rounded-lg hover:bg-slate-600 transition-colors"
+                  className="px-4 py-2 btn-neumorphic rounded-lg"
                 >
                   Cancel
                 </button>
@@ -221,25 +221,25 @@ export default function BoardMenu({
 
       {showImportModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50" onClick={() => setShowImportModal(false)}>
-          <div className="bg-slate-900 rounded-lg shadow-2xl max-w-md w-full mx-4 border border-slate-800 p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-xl font-bold text-violet-400 mb-4">Import Board</h2>
+          <div className="neumorphic-dark rounded-lg shadow-2xl max-w-md w-full mx-4 p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Import Board</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Board Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Board Name</label>
                 <input
                   type="text"
                   value={importName}
                   onChange={(e) => setImportName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-700 bg-slate-800 text-slate-50 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
+                  className="w-full input-neumorphic rounded-lg"
                   placeholder="Imported Board"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">JSON Content</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">JSON Content</label>
                 <textarea
                   value={importJson}
                   onChange={(e) => setImportJson(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-700 bg-slate-800 text-slate-50 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none resize-none h-32 font-mono text-xs"
+                  className="w-full input-neumorphic resize-none h-32 font-mono text-xs rounded-lg"
                   placeholder="Paste board JSON here..."
                 />
               </div>
@@ -247,13 +247,13 @@ export default function BoardMenu({
                 <button
                   onClick={handleImport}
                   disabled={isImporting || !importName.trim() || !importJson.trim()}
-                  className="flex-1 py-2 px-4 bg-violet-600 text-white font-medium rounded-lg hover:bg-violet-700 disabled:opacity-50 transition-colors"
+                  className="flex-1 py-2 px-4 btn-neumorphic rounded-lg disabled:opacity-50"
                 >
                   {isImporting ? 'Importing...' : 'Import'}
                 </button>
                 <button
                   onClick={() => setShowImportModal(false)}
-                  className="px-4 py-2 bg-slate-700 text-slate-300 font-medium rounded-lg hover:bg-slate-600 transition-colors"
+                  className="px-4 py-2 btn-neumorphic rounded-lg"
                 >
                   Cancel
                 </button>
