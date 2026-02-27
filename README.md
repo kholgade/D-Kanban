@@ -100,4 +100,3 @@ web/            # React frontend
 CLAUDE.md       # Development guidelines
 ```
 
-F
